@@ -1,19 +1,37 @@
 # Gerador / Validador de Números de Cartão (Regex + Luhn)
 
-Este é um utilitário simples em .NET 8 que gera e valida números de cartão de crédito usando expressões regulares e o algoritmo de Luhn.
+Projeto em .NET 8 que fornece:
 
-Uso básico:
+- Um pequeno executável que detecta a bandeira (brand) de um número de cartão (`Program.cs`).
+- Utilitários reutilizáveis: `Luhn` (validação e cálculo do dígito de verificação) e `CardGenerator` (geração de números que obedecem a uma regex e passam no Luhn).
 
-- Gerar: `dotnet run -- --generate --regex '^4\\d{15}$' --length 16 --count 5`
-- Validar: `dotnet run -- --validate --number 4242424242424242 --regex '^4\\d{15}$'`
+**Requisitos**
 
-Opções relevantes:
-- `--generate` : modo geração
-- `--validate` : modo validação
-- `--regex <pattern>` : expressão regular usada para filtrar números gerados / validar formato
-- `--length <n>` : comprimento (em dígitos) do número (padrão 16)
-- `--count <n>` : quantos números gerar (padrão 1)
-- `--prefix <digits>` : prefixo fixo para os números gerados
+- .NET 8 SDK
 
-Observações:
-- O gerador produz números aleatórios e os filtra pela regex e pela validade Luhn. Se a regex for muito restritiva pode falhar — ajuste `--prefix`/`--length` ou a regex.
+**Compilar**
+
+	dotnet build
+
+**Uso (detecção de bandeira)**
+
+Você pode executar o projeto passando o número do cartão como primeiro argumento ou executá-lo sem argumentos e informar pelo prompt:
+
+	dotnet run -- 4242424242424242
+
+Saída esperada (exemplo):
+
+	Número: 4242424242424242
+	Bandeira: Visa
+
+Se executado sem argumentos, o programa solicita a entrada pelo terminal.
+
+**APIs úteis (para uso em código)**
+
+- `CardBrandDetector.Detect(string input)` — retorna a bandeira como `string` (ex.: "Visa", "Mastercard", "American Express", "Discover", "JCB", "Diners Club", ou "Unknown").
+- `Luhn.IsValid(string number)` — valida um número por Luhn, retorna `bool`.
+- `Luhn.CalculateCheckDigit(string partialNumber)` — calcula o dígito de verificação Luhn para um número sem o dígito final.
+- `CardGenerator.Generate(string regexPattern, int length, int count, string? prefix = null)` — gera uma sequência de números que batem com a `regexPattern`, têm o `length` especificado e passam na validação Luhn. Lança `InvalidOperationException` se não conseguir gerar após muitas tentativas.
+
+
+Contribuições, issues e sugestões são bem-vindas.
